@@ -15,6 +15,7 @@ jobs:
 
       - name: Fetch latest proxy list
         run: |
+    mkdir -p pac-files  # ایجاد پوشه در صورت نبودن
           curl -s https://cdn.jsdelivr.net/gh/proxifly/free-proxy-list@main/proxies/countries/US/protocols/socks5/data.txt > pac-files/proxy-list.txt
 
       - name: Generate PAC file
