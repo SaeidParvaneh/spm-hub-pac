@@ -17,7 +17,11 @@ jobs:
         run: |
     mkdir -p pac-files  # ایجاد پوشه در صورت نبودن
           curl -s https://cdn.jsdelivr.net/gh/proxifly/free-proxy-list@main/proxies/countries/US/protocols/socks5/data.txt > pac-files/proxy-list.txt
+- name: Show proxy list
+  run: cat pac-files/proxy-list.txt
 
+- name: Show generated PAC file
+  run: cat pac-files/dynamic.pac
       - name: Generate PAC file
         run: |
           echo "function FindProxyForURL(url, host) {" > pac-files/dynamic.pac
