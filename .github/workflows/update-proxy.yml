@@ -1,1 +1,34 @@
-# This is a test workflow
+name: Update Proxy PAC File
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'  # اجرا هر 6 ساعت یک‌بار
+  workflow_dispatch:  # امکان اجرای دستی
+
+jobs:
+  update_proxy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Fetch latest proxy list
+        run: |
+          curl -s https://cdn.jsdelivr.net/gh/proxifly/free-proxy-list@main/proxies/countries/US/protocols/socks5/data.txt > pac-files/proxy-list.txt
+
+      - name: Generate PAC file
+        run: |
+          echo "function FindProxyForURL(url, host) {" > pac-files/dynamic.pac
+          echo "  var proxies = [" >> pac-files/dynamic.pac
+          awk '{print "\"SOCKS5 " $1 ":" $2 "\","}' pac-files/proxy-list.txt >> pac-files/dynamic.pac
+          echo "  ]; return proxies[Math.floor(Math.random() * proxies.length)];" >> pac-files/dynamic.pac
+          echo "}" >> pac-files/dynamic.pac
+
+      - name: Commit and push updated PAC file
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "github-actions@example.com"
+          git add pac-files/dynamic.pac
+          git commit -m "Auto-update PAC file"
+          git push
